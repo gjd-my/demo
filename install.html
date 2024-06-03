@@ -6,10 +6,49 @@
 </head>
 <body>
     <h1>Installazione CMS</h1>
-    <form action="update.php" method="post">
+    <form id="installForm">
         <label for="blogSource">Sorgente blog:</label>
         <input type="text" id="blogSource" name="blogSource" required>
         <button type="submit">Install CMS</button>
     </form>
+
+    <script>
+        document.getElementById('installForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const blogSource = document.getElementById('blogSource').value;
+
+            // Configurazione per l'API di GitHub
+            const username = 'IL_TUO_USERNAME';
+            const repo = 'IL_TUO_REPO';
+            const filePath = 'index.html';
+            const token = 'IL_TUO_TOKEN_PERSONALE_GITHUB';
+
+            // Effettua la richiesta PUT all'API di GitHub per aggiornare il file
+            fetch(`https://api.github.com/repos/${username}/${repo}/contents/${filePath}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify({
+                    message: 'Aggiorna l\'iframe con il nuovo sorgente del blog',
+                    content: btoa(`<iframe id="blogFrame" src="${blogSource}" width="100%" height="600px"></iframe>`),
+                    sha: 'SHA_DEL_FILE'
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('CMS installato con successo!');
+                } else {
+                    alert('Errore durante l\'installazione del CMS');
+                }
+            })
+            .catch(error => {
+                console.error('Errore:', error);
+                alert('Errore durante l\'installazione del CMS');
+            });
+        });
+    </script>
 </body>
 </html>
